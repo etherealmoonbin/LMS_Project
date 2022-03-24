@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row class="ion-justify-content-between">
+        <ion-col style="margin: auto">
+          <ion-title>Activity</ion-title>
+        </ion-col>
+        <ion-col class="ion-text-right" *ngIf="isAuthenticated">
+          <ion-button size="small" (click)="Logout()">Logout</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" [ngClass]="!isAuthenticated ?'isDisabled' : ''">
+  <div *ngFor="let lessonNumber of lessonNumber; let i = index" class="lessonNumber-activity">
+    <ion-button expand="block" class="ion-text-center" (click)="NavigateCrossWord(i)">{{lessonNumber}}</ion-button>
+  </div>
+</ion-content>

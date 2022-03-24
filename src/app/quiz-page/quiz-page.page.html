@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-grid>
+      <ion-row class="ion-justify-content-between">
+        <ion-col style="margin: auto">
+          <ion-title>{{examTitle}}</ion-title>
+        </ion-col>
+        <ion-col class="ion-text-right" *ngIf="isAuthenticated">
+          <ion-button size="small" (click)="Logout()">Logout</ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [ngClass]="!isAuthenticated ?'isDisabled' : ''" fullscreen *ngIf="!isLoading">
+  <ion-list *ngFor="let quizzes of quizList;">
+    <ion-radio-group (ionChange)="getSelectedAnswer($event, quizzes)">
+      <ion-list-header>
+        <h2>{{quizzes.question}} <span *ngIf="isTeacher">Answer: {{quizzes.answer}}</span></h2>
+      </ion-list-header>
+
+      <ion-item class="ion-margin-bottom">
+        <ion-label>{{quizzes.a1}}</ion-label>
+        <ion-radio slot="start" [(ngModel)]="quizzes.a1"></ion-radio>
+      </ion-item>
+    
+      <ion-item class="ion-margin-bottom">
+        <ion-label>{{quizzes.a2}}</ion-label>
+        <ion-radio slot="start" [(ngModel)]="quizzes.a2"></ion-radio>
+      </ion-item>
+    
+      <ion-item class="ion-margin-bottom">
+        <ion-label>{{quizzes.a3}}</ion-label>
+        <ion-radio slot="start" [(ngModel)]="quizzes.a3"></ion-radio>
+      </ion-item>
+    </ion-radio-group>
+</ion-list>
+
+<ion-button expand="block" class="ion-text-center" (click)="SubmitQuiz()" *ngIf="!isTeacher" [ngClass]="isExamDone ?'isDisabled' : ''">Submit</ion-button>
+<ion-button expand="block" class="ion-text-center" (click)="AddQuiz()" *ngIf="isTeacher">Create Exam Question</ion-button>
+</ion-content>

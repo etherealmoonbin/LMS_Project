@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Exams</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen [ngClass]="!isAuthenticated ?'isDisabled' : ''">
+  <ion-list>
+    <ion-item *ngFor="let quizGroup of quizGroup; let i = index" expand="full" color="light">
+      <ion-label *ngIf="quizGroup.groupName !== null" style="width: 100%;" (click)="navigateToQuiz(quizGroup)">
+        {{quizGroup.groupName}}
+      </ion-label>
+      <!-- <ion-button expand="block" class="ion-text-center" (click)="RenameQuizGroup(quizGroup)" *ngIf="isTeacher && quizGroup.groupName !== null">Rename</ion-button> -->
+      <ion-button expand="block" class="ion-text-center" (click)="RemoveQuizGroup(quizGroup)" *ngIf="isTeacher && quizGroup.groupName !== null">Delete</ion-button>
+      <ion-input *ngIf="quizGroup.groupName == null" type="text" [(ngModel)]="quizGroupName"></ion-input>
+      <ion-button expand="block" class="ion-text-center" (click)="AddQuizGroup(quizGroup)" *ngIf="isTeacher && quizGroup.groupName == null">Add</ion-button>
+      <ion-button expand="block" class="ion-text-center" (click)="RemoveQuizGroup(quizGroup)" *ngIf="isTeacher && quizGroup.groupName == null">Delete</ion-button>
+    </ion-item>`
+  </ion-list>
+  <ion-button expand="block" class="ion-text-center" (click)="AddQuizGroup()" *ngIf="isTeacher" [ngClass]="addQuizGroupName ?'isDisabled' : ''">Add Exam Group</ion-button>
+</ion-content>

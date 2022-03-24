@@ -1,0 +1,34 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Activity {{myParam}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid *ngIf="activitySelector == 0">
+    <ion-row>
+      <ion-col *ngFor="let tile of tiles; let i = index;"
+      size="1" style="border: 1px solid var(--color); height: 30px">
+        <div class="tile-input" *ngIf="tile.editable"><span *ngIf="isTeacher">{{tile.value}}</span><input *ngIf="!isTeacher" class="act-inp-{{i}}" #box maxlength="1" (keyup)="updateBox($event, box, tile)" placeholder="{{tile.placeholder}}" /></div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid *ngIf="activitySelector == 1">
+    <ion-row style="border: 1px solid white;">
+      <ion-col *ngFor="let letter of letters"
+      size="1" (click)="selectLetter(letter)" style="height: 30px;display: flex;flex-direction: column;justify-content: center;margin: auto;text-align: center;border-radius: 100px;">
+        <!-- <div class="tile-input">{{letter.value}}</div> -->
+        <div [ngClass]="letter.isEditable ?'letter-selected' : ''" [ngStyle]="{'transform': letter.direction == 0 ? 'rotate(90deg)' : letter.direction == 1 ? 'rotate(0deg)' : 'rotate(20deg)'}"></div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div class="ion-padding">
+    <div class="ion-padding-bottom" *ngFor="let clues of activityQuestion; let i = index;">
+      <div>{{i + 1}}. {{clues}}</div>
+    </div>
+  </div>
+  <ion-button expand="block" class="ion-text-center" (click)="SubmitCrossword()" *ngIf="activitySelector == 0 && !isTeacher">Submit</ion-button>
+  <ion-button expand="block" class="ion-text-center" (click)="SubmitLetters()" *ngIf="activitySelector == 1 && !isTeacher">Submit</ion-button>
+</ion-content>

@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Add Exam Form</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item class="ion-margin-bottom">
+    <ion-label position="stacked">Question</ion-label>
+    <ion-input type="text" [(ngModel)]="question"></ion-input>
+  </ion-item>
+    <ion-label>Select on the options which is the correct answer</ion-label>
+
+  <ion-radio-group (ionChange)="getSelectedAnswer($event, 'select')">
+    <ion-item class="ion-margin-bottom">
+      <ion-label position="stacked">{{c1}}</ion-label>
+      <ion-radio slot="start" [(ngModel)]="c1"></ion-radio>
+    </ion-item>
+  
+    <ion-item class="ion-margin-bottom">
+      <ion-label position="stacked">{{c2}}</ion-label>
+      <ion-radio slot="start" [(ngModel)]="c2" ></ion-radio>
+    </ion-item>
+  
+    <ion-item class="ion-margin-bottom">
+      <ion-label position="stacked">{{c3}}</ion-label>
+      <ion-radio slot="start" [(ngModel)]="c3"></ion-radio>
+    </ion-item>
+  </ion-radio-group>
+
+  <ion-label>Please enter option values</ion-label>
+  <ion-input type="text" [(ngModel)]="c1"></ion-input>
+  <ion-input type="text" [(ngModel)]="c2"></ion-input>
+  <ion-input type="text" [(ngModel)]="c3"></ion-input>
+
+
+
+  <ion-button expand="block" class="ion-text-center ion-margin-bottom" (click)="AddQuiz()">Add</ion-button>
+  <ion-button expand="block" class="ion-text-center ion-margin-bottom" (click)="ResetForm()">Reset</ion-button>
+  <ion-button expand="block" class="ion-text-center ion-margin-bottom" (click)="Back()">Cancel</ion-button>
+</ion-content>

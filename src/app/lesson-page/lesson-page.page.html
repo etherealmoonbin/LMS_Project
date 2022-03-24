@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{lessonTitle}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid style="height: 100%;">
+    <ion-row style="display: flex; align-items: center; justify-content: center; height: 100%;">
+      <ion-col>
+        <ion-item>
+          <ion-slides>
+            <ion-slide *ngFor="let lessonlength of lessonPageLength">
+              <img src="assets/lessons/L{{myParam}} - {{lessonlength}}.jpg">
+            </ion-slide>
+          </ion-slides>
+        </ion-item>
+        <ion-button expand="block" class="ion-text-center" [ngClass]="!isAuthenticated ?'isDisabled' : ''" (click)="NavigateCrossWord(myParam)">Next - Activity</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+ </ion-content>
+
