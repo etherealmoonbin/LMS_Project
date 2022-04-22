@@ -122,4 +122,17 @@ export class QuizFormPage implements OnInit {
     this.router.navigate(['/quiz-page', {index: index.groupId, name: index.groupName}]);
   }
 
+  async studentRecords() {
+    this.router.navigate(['/student-record', {}]);
+  }
+
+  async Logout() {
+    await this.storage.set('username', null);
+    await this.storage.set('password', null);
+    await this.storage.set('authority', null);
+    await this.storage.set('userId', null);
+
+    this.checkAuthentication();
+  }
+
 }

@@ -1,6 +1,16 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Exams</ion-title>
+    <ion-grid>
+      <ion-row class="ion-justify-content-between">
+        <ion-col style="margin: auto">
+          <ion-title>Exams</ion-title>
+        </ion-col>
+        <ion-col class="ion-text-right" *ngIf="isAuthenticated" style="font-size: 25px;">
+          <ion-icon class="ion-padding-end" name="person-circle-outline" *ngIf="isTeacher" (click)="studentRecords()"></ion-icon>
+          <ion-icon class="ion-padding-end" (click)="Logout()" name="log-out-outline"></ion-icon>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-toolbar>
 </ion-header>
 

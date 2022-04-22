@@ -9,19 +9,19 @@
     <ion-row>
       <ion-col *ngFor="let tile of tiles; let i = index;"
       size="1" style="border: 1px solid var(--color); height: 30px">
-        <div class="tile-input" *ngIf="tile.editable"><span *ngIf="isTeacher">{{tile.value}}</span><input *ngIf="!isTeacher" class="act-inp-{{i}}" #box maxlength="1" (keyup)="updateBox($event, box, tile)" placeholder="{{tile.placeholder}}" /></div>
+        <div class="tile-input" *ngIf="tile.editable"><span *ngIf="isTeacher">{{tile.value}}</span><input *ngIf="!isTeacher" class="act-inp-{{i}}" #box maxlength="1" (keyup)="updateBox($event, box.value, tile)" placeholder="{{tile.placeholder}}" /></div>
       </ion-col>
     </ion-row>
   </ion-grid>
 
   <ion-grid *ngIf="activitySelector == 1">
-    <ion-row style="border: 1px solid white;">
-      <ion-col *ngFor="let letter of letters"
-      size="1" (click)="selectLetter(letter)" style="height: 30px;display: flex;flex-direction: column;justify-content: center;margin: auto;text-align: center;border-radius: 100px;">
-        <!-- <div class="tile-input">{{letter.value}}</div> -->
-        <div [ngClass]="letter.isEditable ?'letter-selected' : ''" [ngStyle]="{'transform': letter.direction == 0 ? 'rotate(90deg)' : letter.direction == 1 ? 'rotate(0deg)' : 'rotate(20deg)'}"></div>
+    <div class="scrambled-header">Scrambled Word</div>
+    <ion-row>
+      <ion-col>
+        <div class="scrambledWordContainer">{{scrambleWord}}</div>
       </ion-col>
     </ion-row>
+    <ion-input class="scrambled-input" [(ngModel)]="guess"></ion-input>
   </ion-grid>
 
   <div class="ion-padding">
@@ -30,5 +30,5 @@
     </div>
   </div>
   <ion-button expand="block" class="ion-text-center" (click)="SubmitCrossword()" *ngIf="activitySelector == 0 && !isTeacher">Submit</ion-button>
-  <ion-button expand="block" class="ion-text-center" (click)="SubmitLetters()" *ngIf="activitySelector == 1 && !isTeacher">Submit</ion-button>
+  <ion-button expand="block" class="ion-text-center" (click)="SubmitLetters()" *ngIf="activitySelector == 1 && !isTeacher" [ngClass]="scambledSubmitIsDisable ?'isDisabled' : ''">Submit</ion-button>
 </ion-content>

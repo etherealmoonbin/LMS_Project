@@ -30,6 +30,10 @@ const routes: Routes = [
     path: 'activity-crossword',
     loadChildren: () => import('./activity-crossword/activity-crossword.module').then( m => m.ActivityCrosswordPageModule)
   },
+  {
+    path: 'student-record',
+    loadChildren: () => import('./student-record/student-record.module').then( m => m.StudentRecordPageModule)
+  },
 ];
 @NgModule({
   imports: [

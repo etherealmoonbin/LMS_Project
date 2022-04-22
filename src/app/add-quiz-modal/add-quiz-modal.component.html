@@ -11,28 +11,23 @@
   </ion-item>
     <ion-label>Select on the options which is the correct answer</ion-label>
 
-  <ion-radio-group (ionChange)="getSelectedAnswer($event, 'select')">
-    <ion-item class="ion-margin-bottom">
-      <ion-label position="stacked">{{c1}}</ion-label>
-      <ion-radio slot="start" [(ngModel)]="c1"></ion-radio>
-    </ion-item>
-  
-    <ion-item class="ion-margin-bottom">
-      <ion-label position="stacked">{{c2}}</ion-label>
-      <ion-radio slot="start" [(ngModel)]="c2" ></ion-radio>
-    </ion-item>
-  
-    <ion-item class="ion-margin-bottom">
-      <ion-label position="stacked">{{c3}}</ion-label>
-      <ion-radio slot="start" [(ngModel)]="c3"></ion-radio>
-    </ion-item>
-  </ion-radio-group>
 
-  <ion-label>Please enter option values</ion-label>
-  <ion-input type="text" [(ngModel)]="c1"></ion-input>
-  <ion-input type="text" [(ngModel)]="c2"></ion-input>
-  <ion-input type="text" [(ngModel)]="c3"></ion-input>
+    <ion-list>
+      <ion-item>
+        <input type="checkbox" name="choice1" (click)="getSelectedAnswer($event, 1)" class="radio-ans" />
+        <ion-input type="text" [(ngModel)]="c1" ></ion-input>
+      </ion-item>
 
+      <ion-item>
+        <input type="checkbox" name="choice2" (click)="getSelectedAnswer($event, 2)" class="radio-ans" />
+        <ion-input type="text" [(ngModel)]="c2"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <input type="checkbox" name="choice3" (click)="getSelectedAnswer($event, 3)" class="radio-ans" />
+        <ion-input type="text" [(ngModel)]="c3"></ion-input>
+      </ion-item>
+    </ion-list>
 
 
   <ion-button expand="block" class="ion-text-center ion-margin-bottom" (click)="AddQuiz()">Add</ion-button>

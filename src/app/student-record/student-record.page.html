@@ -1,0 +1,31 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Student Records</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="studentRecord table-header">
+    <div class="header-head">
+      <div>
+        Username
+      </div>
+      <div *ngFor="let activityList of activityList; let i = index">
+        Act {{i + 1}}
+      </div>
+      <div *ngFor="let examGroup of examGroup;">
+        {{examGroup.groupName}}
+      </div>
+    </div>
+
+    <div class="header-head" *ngFor="let student of records" (click)="selectRow($event)">
+      <div>
+        {{student.studentUsername}}
+      </div>
+      <div *ngFor="let value of student.results">
+        {{value.score}}
+      </div>
+    </div>
+  </div>
+
+</ion-content>

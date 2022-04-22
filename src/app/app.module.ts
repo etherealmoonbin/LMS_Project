@@ -15,6 +15,7 @@ import { AuthenticationModalComponent } from './authentication-modal/authenticat
 import { AddQuizModalComponent } from './add-quiz-modal/add-quiz-modal.component';
 import { UtilityComponent } from './utility/utility.component';
 import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
+import {CustomMaxlengthModule} from 'custom-maxlength';
 
 @NgModule({
   declarations: [
@@ -37,7 +38,8 @@ import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
     }), 
     AppRoutingModule,
     IonicStorageModule.forRoot(),
-    FormsModule
+    FormsModule,
+    CustomMaxlengthModule
    ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

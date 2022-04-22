@@ -5,8 +5,9 @@
         <ion-col style="margin: auto">
           <ion-title>Lessons</ion-title>
         </ion-col>
-        <ion-col class="ion-text-right" *ngIf="isAuthenticated">
-          <ion-button size="small" (click)="Logout()">Logout</ion-button>
+        <ion-col class="ion-text-right" *ngIf="isAuthenticated" style="font-size: 25px;">
+          <ion-icon class="ion-padding-end" name="person-circle-outline" *ngIf="isTeacher" (click)="studentRecords()"></ion-icon>
+          <ion-icon class="ion-padding-end" (click)="Logout()" name="log-out-outline"></ion-icon>       
         </ion-col>
       </ion-row>
     </ion-grid>
@@ -17,7 +18,7 @@
   <ion-list>
     <ion-item *ngFor="let lessonlist of lessonList; let i = index" expand="full" color="light">
       <ion-button *ngIf="isTeacher" (click)="unlockLesson(i, lessonlist)"><i class="fa-solid fa-unlock"></i></ion-button>
-      <ion-label [ngClass]="!lessonlist.lock ?'isDisabled' : ''" (click)="lessonNavigate(i, lessonlist.lock)">
+      <ion-label [ngClass]="lessonlist.lock ?'isDisabled' : ''" (click)="lessonNavigate(i, lessonlist.lock)">
         {{lessonlist.lesson}}
       </ion-label>
     </ion-item>

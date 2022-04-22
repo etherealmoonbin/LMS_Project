@@ -81,6 +81,7 @@ export class QuizPagePage implements OnInit {
     await this.storage.set('username', null);
     await this.storage.set('password', null);
     await this.storage.set('authority', null);
+    await this.storage.set('userId', null);
 
     this.checkAuthentication();
   }
@@ -102,6 +103,8 @@ export class QuizPagePage implements OnInit {
       }
     }
     await this.util.presentLoading('Checking Exam...');
+    let userId = await this.storage.get('userId');
+    this.DbServiceService.submitQuiz(userId, this.myParam, score);
     alert('Score: ' + score);
     this.isExamDone = true;
   }

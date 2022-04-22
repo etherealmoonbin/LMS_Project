@@ -33,6 +33,7 @@ export class ActivityPagePage implements OnInit {
   async checkAuthentication() {
     const username = await this.storage.get('username');
     const password = await this.storage.get('password');
+    this.isTeacher = await this.storage.get('authority');
 
     if(username == null && password == null) {
       this.isAuthenticated = false;
@@ -59,12 +60,17 @@ export class ActivityPagePage implements OnInit {
     await this.storage.set('username', null);
     await this.storage.set('password', null);
     await this.storage.set('authority', null);
+    await this.storage.set('userId', null);
 
     this.checkAuthentication();
   }
 
   async NavigateCrossWord(index) {
     this.router.navigate(['/activity-crossword', {index: index}]);
+  }
+
+  async studentRecords() {
+    this.router.navigate(['/student-record', {}]);
   }
 
 }

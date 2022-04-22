@@ -3,6 +3,7 @@ import { SQLite, SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { Platform } from '@ionic/angular';
 import { mockQuiz } from './constants/lessonButton';
 import { Storage } from '@ionic/storage';
+import { lessonButtons } from './constants/lessonButton';
 
 @Injectable({
   providedIn: 'root'
@@ -66,8 +67,33 @@ export class DbServiceService {
               // alert(JSON.stringify(res));
             })
             .catch((error) => alert(JSON.stringify(error)));
+
+            await sqLite.executeSql(`
+                CREATE TABLE IF NOT EXISTS scores (
+                  score_id INTEGER PRIMARY KEY, 
+                  user_id varchar(255),
+                  category_id varchar(255),
+                  score varchar(255)
+                )`, [])
+              .then((res) => {
+                // alert(JSON.stringify(res));
+              })
+              .catch((error) => alert(JSON.stringify(error)));
+
+              await sqLite.executeSql(`
+                CREATE TABLE IF NOT EXISTS scoresActivity (
+                  scoreact_id INTEGER PRIMARY KEY, 
+                  user_id varchar(255),
+                  category_id varchar(255),
+                  score varchar(255)
+                )`, [])
+              .then((res) => {
+                // alert(JSON.stringify(res));
+              })
+              .catch((error) => alert(JSON.stringify(error)));
           })
           .catch((error) => alert(JSON.stringify(error)));
+          
       });
 
       const isInit = await this.storage.get('l0-lock');
@@ -97,19 +123,18 @@ export class DbServiceService {
   }
 
   async registerUser(username: string, password: string) {
-    let result = null;
+    let result = null, res = [];
     await this.dbInstance.executeSql(`INSERT INTO ${this.db_table} (username, password)
     SELECT * FROM (SELECT ?, ?) AS tmp
     WHERE NOT EXISTS (
       SELECT username FROM ${this.db_table} WHERE username = ?
-  ) LIMIT 1;`, [username, password, username]).then((data) => {
+  ) LIMIT 1;`, [username, password, username]).then(async (data) => {
       console.log("INSERTED: " + JSON.stringify(data));
       if(data.rowsAffected == 0) {
         alert('User is existing');
         result = false;
       } else {
-        let isTeacher = username.split('.')[1];
-        result = [username, password, isTeacher == 'teacher' ? 'teacher' : null];
+        result = await this.login(username, password);
       }
     }, (error) => {
       console.log("ERROR: " + alert(error.err));
@@ -117,17 +142,43 @@ export class DbServiceService {
     return result;
   }
 
+  async getStudentList(){
+    let result = [];
+    await this.dbInstance.executeSql(`SELECT * FROM teacher`, []).then((data) => {
+      for(let i = 0; i < data.rows.length; i++) {
+        let isTeacher = data.rows.item(i).username.split('.')[1];
+        if(isTeacher !== "teacher") {
+          result.push({
+            'studentId': JSON.parse(data.rows.item(i).user_id),
+            'studentUsername' : data.rows.item(i).username,
+          });
+        }
+      }
+      console.log("selected: " + JSON.stringify(data));
+      }, (error) => {
+        console.log("ERROR: " + alert(error.err));
+      });
+      return result;
+  }
+
   async login(username:string, password: string) {
-    let result = null;
+    let result = [];
     await this.dbInstance.executeSql(`SELECT * FROM teacher WHERE username = ? AND password = ?`, [username, password]).then((data) => {
         console.log("INSERTED: " + JSON.stringify(data));
         if(data.rows.length !== 0) {
           alert('Authenticated');
-          let isTeacher = username.split('.')[1];
-          result = [username, password, isTeacher == 'teacher' ? 'teacher' : null];
+          for(let i = 0; i < data.rows.length; i++) {
+              result.push({
+                'user_id': JSON.parse(data.rows.item(i).user_id),
+                'username' : data.rows.item(i).username,
+                'password' : data.rows.item(i).password,
+                'isTeacher': username.split('.')[1] == 'teacher' ? 'teacher' : null
+                
+              });
+          }
         } else {
           alert('User Not Found');
-          result = false;
+          result = [];
         }
       }, (error) => {
         console.log("ERROR: " + alert(error.err));
@@ -197,6 +248,7 @@ export class DbServiceService {
         result.push({
           'groupId': JSON.parse(data.rows.item(i).groupId),
           'groupName' : data.rows.item(i).groupName,
+          'quizId': data.rows.item(i).quiz_id
         }
         )
       }
@@ -229,4 +281,115 @@ export class DbServiceService {
     return result;
   }
 
+  async submitActivity(user_id: any, category_id: any, score: any) {
+    await this.dbInstance.executeSql(`INSERT INTO scoresActivity (
+      user_id,
+      category_id,
+      score) VALUES (
+        ?, 
+        ?,
+        ?)`, [user_id, category_id, score]).then((data) => {
+      console.log("INSERTED: " + JSON.stringify(data));
+    }, (error) => {
+      console.log("ERROR: " + alert(error.err));
+    });
+  }
+
+  async submitQuiz (user_id: any,category_id:any ,score: any) {
+    await this.dbInstance.executeSql(`INSERT INTO scores (
+      user_id,
+      category_id,
+      score) VALUES (
+        ?, 
+        ?,
+        ?)`, [user_id, category_id, score]).then((data) => {
+      console.log("INSERTED: " + JSON.stringify(data));
+    }, (error) => {
+      console.log("ERROR: " + alert(error.err));
+    });
+  }
+
+  async getQuizResults () {
+    let result = [];
+    let records = [];
+    let actResult = [];
+    await this.dbInstance.executeSql(`SELECT * FROM scores`, []).then((data) => {
+      for(let i = 0; i < data.rows.length; i++) { 
+        result.push({
+          'user_id': data.rows.item(i).user_id,
+          'category_id' : data.rows.item(i).category_id,
+          'score' : data.rows.item(i).score,
+        });
+      }
+      console.log("INSERTED: " + JSON.stringify(data));
+    }, (error) => {
+      console.log("ERROR: " + alert(error.err));
+    });
+
+    await this.dbInstance.executeSql(`SELECT * FROM scoresActivity`, []).then((data) => {
+      for(let i = 0; i < data.rows.length; i++) { 
+        actResult.push({
+          'user_id': data.rows.item(i).user_id,
+          'category_id' : data.rows.item(i).category_id,
+          'score' : data.rows.item(i).score,
+        });
+      }
+      console.log("INSERTED: " + JSON.stringify(data));
+    }, (error) => {
+      console.log("ERROR: " + alert(error.err));
+    });
+
+    const studentList = await this.getStudentList();
+    const examGroup = await this.getGroupQuiz();
+
+    for(let i = 0; i < studentList.length; i++) {
+      let resultArr = [];
+
+      let obj1 = { 
+        'studentUsername': studentList[i].studentUsername,
+        'results' : []
+      }
+        let score = result.filter((data) => {
+          return data.user_id == studentList[i].studentId.toString();
+        });
+
+        let scoreActivity = actResult.filter((data) => {
+          return data.user_id == studentList[i].studentId.toString();
+        });
+
+        for(let ii = 0; ii < lessonButtons.length; ii++) {
+          let scoreVal = null;
+          if(scoreActivity.length !== 0) {
+            for(let v = 0; v < scoreActivity.length; v++) {
+              if(ii.toString() == scoreActivity[v].category_id) {
+                scoreVal = scoreActivity[v].score
+              }
+            }
+          }
+        obj1['results'].push({
+          'key' : `Act ${ii}`,
+          'score' : scoreVal
+        });
+        }
+
+        for(let iii = 0; iii < examGroup.length; iii++) {
+          let scoreVal = null;
+          if(score.length !== 0) {
+            for(let iv = 0; iv < score.length; iv++) {
+              if(examGroup[iii].groupId.toString() == score[iv].category_id) {
+                scoreVal = score[iv].score
+              }
+            }
+          }
+        obj1['results'].push({
+          'key' : examGroup[iii].groupName,
+          'score' : scoreVal
+        });
+      }
+
+    records.push(obj1);
+  }
+
+    return records;
+  }
 }

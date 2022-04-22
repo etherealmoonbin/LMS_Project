@@ -3,6 +3,7 @@ import { Tile, clues, Letters } from '../constants/lessonButton';
 import * as _ from 'lodash';
 import { ActivatedRoute } from '@angular/router';
 import { Storage } from '@ionic/storage';
+import { DbServiceService } from '../db-service.service';
 
 @Component({
   selector: 'app-activity-crossword',
@@ -22,8 +23,20 @@ export class ActivityCrosswordPage implements OnInit {
   previousLetter: any;
   isTeacher: any;
 
+  scrambleWord = "";
+  level = 1;
+  score = 0;
+  word;
+  attempts = 0;
+  correct = 0;
+  guess = "";
+  scambledSubmitIsDisable = false;
+  guessLength = 0;
+  totalAdded = 0;
+
   constructor(private route: ActivatedRoute,
-    private storage: Storage
+    private storage: Storage,
+    private DbServiceService: DbServiceService
     ) { 
 
     }
@@ -33,9 +46,9 @@ export class ActivityCrosswordPage implements OnInit {
     this.paramIndex = this.route.snapshot.paramMap.get('index');
     this.myParam = parseInt(this.paramIndex) + 1;
     this.activityQuestion = clues[this.paramIndex];
-    this.activitySelector = 0;
+    this.activitySelector = Math.floor(Math.random() * (1 - 0 + 1)) + 0;
     this.tiles = await this.getTiles(this.paramIndex);
-    this.letters = await this.getLetters(this.paramIndex);
+    this.scrambleWord = this.scrambledWord();
   }
 
   async getRandomizer(max) {
@@ -51,7 +64,7 @@ export class ActivityCrosswordPage implements OnInit {
       editable: tile.editable,
       color: tile.color,
       value: tile.value,
-      response: response
+      response: response.toUpperCase()
     }
     this.updateResponses(responseTile);
 
@@ -93,32 +106,23 @@ export class ActivityCrosswordPage implements OnInit {
   }
 
   getLetters(index): Letters[] {
-    let tiles: Letters[] = [];
-    // let tiles: Tile[] = [
-    //   {color: 'while', editable: true, rows: 0, cols: 0},
-    //   {color: 'black', editable: false, rows: 0, cols: 0},
-    //   {color: 'white', editable: true, rows: 0, cols: 0},
-    //   {color: 'black', editable: false, rows: 0, cols: 0},
-    // ];
+    let tiles = [];
     let grid = this.getGrid(index);
-    let tileIndex = 0;
+    let word = null;
+    let value = "";
     for (let i=0; i<grid.length; i++) {
       let row = grid[i];
       for (let j=0; j<row.length; j++) {
-        let value = row[j];
-        let isEditable = false;
-        let color = value?'white':'black';
-        let placeholder = this.getPlaceholder(index, i, j);//`${i}${j}` ;
-        let randomLetter = this.randomStringCrossword(1);
-        tiles.push({
-          color: color,
-          isEditable: isEditable,
-          rows: i,
-          cols: j,
-          value: row[j] ? row[j] : randomLetter,
-          placeholder: placeholder,
-          direction: null
-        });
+        if(row[j]) {
+          value = value + row[j];
+          if(row[j + 1] == null) {
+            tiles.push(value);
+            value = "";
+          }
+          continue;
+        } else {
+          break;
+        }
       }
     }
     // this.responses = tiles;
@@ -308,6 +312,126 @@ export class ActivityCrosswordPage implements OnInit {
     console.log(correctResponses);
     let length = correctResponses?correctResponses.length:0;
     return length;
+  }
+
+  getAnswers (i) {
+    let ans;
+    switch (parseInt(i)) {
+      case 0:
+        ans = [
+          "SOCIALMEDIA",
+          "SECURITY",
+          "SYMBIAN",
+          "IOS",
+          "ANDROID",
+          "WINDOWS",
+          "SECURITY",
+        ]
+        break;
+        case 1:
+          ans = [
+            "SPAM",
+            "FIREWALL",
+            "FLAMING",
+            "NETIQUETTE",
+            "YELLING",
+            "COPYRIGHT",
+          ]
+        break;
+        case 2:
+          ans = [
+            "SEARCHENGINE",
+            "GOOGLE",
+            "BING",
+            "ASK",
+            "YAHOO",
+          ]
+        break;
+        case 3:
+          ans = [
+            "TABS",
+            "TILEBAR",
+            "RIBBON",
+            "ZOOMCONTROLS",
+          ]
+        break;
+        case 4:
+          ans = [
+            "PROXIMITY",
+            "REPETITION",
+            "CONTRAST",
+            "ALIGNMENT",
+          ]
+        break;
+        case 5:
+          ans = [
+            "PREZI",
+            "ZOHO",
+            "DROPBOX",
+            "FACEBOOK",
+          ]
+        break;
+        case 6:
+          ans = [
+            "REFLECTION",
+            "EXPRESSION",
+            "SHARING",
+            "CONTENTEDITOR",
+          ]
+        break;
+        case 7:
+          ans = [
+            "MULTIMEDIA",
+            "NEWSPAPER",
+            "ONLINEGAMES",
+            "MEDIA",
+          ]
+        break;
+        case 8:
+          ans = [
+            "UGLY",
+            "ADVOCACY",
+            "GOOD",
+            "BAD",
+          ]
+        break;
+        case 9:
+          ans = [
+            "MOTIVATE",
+            "OTHERS",
+            "TEMPORARY",
+            "SCOPE",
+          ]
+        break;
+        case 10:
+          ans = [
+            "INTRODUCTION",
+            "SUPPORT",
+            "ULTRAS",
+            "LURKERS",
+          ]
+        break;
+        case 11:
+          ans = [
+            "INFRASTRACTURE",
+            "CHANGE",
+            "OPERATION",
+            "SERVICE",
+          ]
+        break;
+        case 12:
+          ans = [
+            "JOBLOSS",
+            "COST",
+            "COMPETITION",
+            "SECURITY",
+          ]
+        break;
+    }
+    this.guessLength = ans.length;
+    let wordGen = ans[this.totalAdded];
+    this.word = wordGen;
+    return wordGen;
   }
 
   getGrid(i): any {
@@ -606,6 +730,8 @@ export class ActivityCrosswordPage implements OnInit {
 
   async SubmitCrossword() {
     const crosswordScore = this.calculateScore();
+    let userId = await this.storage.get('userId');
+    await this.DbServiceService.submitActivity(userId, this.paramIndex, crosswordScore);
     alert(`Score: ${crosswordScore}`);
   }
 
@@ -640,6 +766,64 @@ export class ActivityCrosswordPage implements OnInit {
     console.log(directionX, directionY);
     this.previousCoordinate = [letter.rows, letter.cols];
     this.previousLetter = letter;
+  }
+
+  randomWord(lvl) {
+    this.word = this.getAnswers(lvl);
+  }
+
+  scrambledWord() {
+    let word = this.getAnswers(parseInt(this.paramIndex));
+    let letters = word.split("");
+    let currentIndex = letters.length,
+      temporaryValue,
+      randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = letters[currentIndex];
+      letters[currentIndex] = letters[randomIndex];
+      letters[randomIndex] = temporaryValue;
+    }
+  
+    return letters.join(" ");
+  }
+
+  resetScrambledword() {
+    this.scrambleWord = this.scrambledWord();
+    this.guess = "";
+  }
+
+  async SubmitLetters() {
+    let userId = await this.storage.get('userId');
+    if(this.guess.toLocaleUpperCase() == this.word) {
+      this.score = this.score + 1;
+      this.totalAdded = this.score + this.attempts;
+      if(this.totalAdded == this.guessLength) {
+        await this.DbServiceService.submitActivity(userId, this.paramIndex, this.score);
+        alert(`Score: ${this.score}`);
+        this.scambledSubmitIsDisable = true;
+        this.totalAdded = 0;
+      } else {
+        this.resetScrambledword();
+      }
+    } else {
+      this.attempts = this.attempts + 1;
+      this.totalAdded = this.score + this.attempts;
+      if(this.attempts == this.guessLength) {
+        await this.DbServiceService.submitActivity(userId, this.paramIndex, this.score);
+        alert(`Score: ${this.score}`);
+        this.scambledSubmitIsDisable = true;
+        this.totalAdded = 0;
+      }
+      this.resetScrambledword();
+    }
+
   }
 
 }

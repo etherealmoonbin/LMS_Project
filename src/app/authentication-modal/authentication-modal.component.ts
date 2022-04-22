@@ -29,9 +29,11 @@ export class AuthenticationModalComponent implements OnInit {
     const isLogin = await this.DbServiceService.login(this.username, this.password);
     if(isLogin) {
       this.modalController.dismiss(isLogin);
-      await this.storage.set('username', isLogin[0]);
-      await this.storage.set('password', isLogin[1]);
-      await this.storage.set('authority', isLogin[2] ? isLogin[2] : null);
+      await this.storage.set('username', isLogin[0].username);
+      await this.storage.set('password', isLogin[0].password);
+      await this.storage.set('authority', isLogin[0].isTeacher);
+      await this.storage.set('userId', isLogin[0].user_id);
+
     }
   }
 
@@ -43,9 +45,10 @@ export class AuthenticationModalComponent implements OnInit {
     const isLogin = await this.DbServiceService.registerUser(this.username, this.password);
     if(isLogin) {
       this.modalController.dismiss(isLogin);
-      await this.storage.set('username', isLogin[0]);
-      await this.storage.set('password', isLogin[1]);
-      await this.storage.set('authority', isLogin[2] ? isLogin[2] : null);
+      await this.storage.set('username', isLogin[0].username);
+      await this.storage.set('password', isLogin[0].password);
+      await this.storage.set('authority', isLogin[0].isTeacher);
+      await this.storage.set('userId', isLogin[0].user_id);
     }
   }
 }

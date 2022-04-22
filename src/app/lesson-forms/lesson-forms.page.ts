@@ -27,9 +27,10 @@ export class LessonFormsPage implements OnInit {
 
   async ngOnInit() {
     for(let i = 0; i < lessonButtons.length; i++) {
+      const isLock = await this.storage.get(`l${i}-lock`)
       this.lessonList.push({
         lesson: lessonButtons[i],
-        lock: await this.storage.get(`l${i}-lock`)
+        lock: isLock == null ? true : isLock
       });
     }
 
@@ -61,12 +62,14 @@ export class LessonFormsPage implements OnInit {
     } else {
       this.isAuthenticated = true;
     }
+    this.isTeacher = await this.storage.get('authority');
   }
 
   async Logout() {
     await this.storage.set('username', null);
     await this.storage.set('password', null);
     await this.storage.set('authority', null);
+    await this.storage.set('userId', null);
     
     this.checkAuthentication();
   }
@@ -74,6 +77,10 @@ export class LessonFormsPage implements OnInit {
   async unlockLesson(index, lesson) {
     lesson.lock = !lesson.lock;
     await this.storage.set(`l${index}-lock`, lesson.lock);
+  }
+
+  async studentRecords() {
+    this.router.navigate(['/student-record', {}]);
   }
 
 }
