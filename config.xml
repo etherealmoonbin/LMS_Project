@@ -3,7 +3,7 @@
     <name>iTeach</name>
     <description>Learning management system created on Angular and Ionic Framework</description>
     <author email="hi@ionicframework.com" href="http://ionicframework.com/">ethmb</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://localhost:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -19,7 +19,6 @@
     <preference name="FadeSplashScreenDuration" value="300" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="3000" />
     <preference name="StatusBarOverlaysWebView" value="false" />
     <platform name="android">
         <preference name="Scheme" value="http" />

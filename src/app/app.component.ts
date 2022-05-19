@@ -25,7 +25,7 @@ export class AppComponent {
     await this.storage.create();
     await this.dbService.databaseConn();
     this.preload('bg', 'assets/audio/bg1.mp3');
-    // this.play('bg');
+    this.play('bg');
 
   }
 

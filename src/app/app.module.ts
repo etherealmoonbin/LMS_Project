@@ -16,12 +16,15 @@ import { AddQuizModalComponent } from './add-quiz-modal/add-quiz-modal.component
 import { UtilityComponent } from './utility/utility.component';
 import { NativeAudio } from '@awesome-cordova-plugins/native-audio/ngx';
 import {CustomMaxlengthModule} from 'custom-maxlength';
+import { AddLessonModalComponent } from './add-lesson-modal/add-lesson-modal.component';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthenticationModalComponent,
-    AddQuizModalComponent],
+    AddQuizModalComponent,
+    AddLessonModalComponent],
   entryComponents: [],
   imports: [
     BrowserModule, 
@@ -45,7 +48,8 @@ import {CustomMaxlengthModule} from 'custom-maxlength';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     SQLite,
     UtilityComponent,
-    NativeAudio
+    NativeAudio,
+    SplashScreen
   ],
   bootstrap: [AppComponent],
 })

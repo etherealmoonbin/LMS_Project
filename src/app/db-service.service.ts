@@ -4,6 +4,7 @@ import { Platform } from '@ionic/angular';
 import { mockQuiz } from './constants/lessonButton';
 import { Storage } from '@ionic/storage';
 import { lessonButtons } from './constants/lessonButton';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,9 @@ export class DbServiceService {
   constructor(
     private platform: Platform,
     private sqlite: SQLite,
-    private storage: Storage) { 
+    private storage: Storage,
+    private splashScreen: SplashScreen
+    ) { 
       
     }
 
@@ -91,6 +94,21 @@ export class DbServiceService {
                 // alert(JSON.stringify(res));
               })
               .catch((error) => alert(JSON.stringify(error)));
+
+              await sqLite.executeSql(`
+              CREATE TABLE IF NOT EXISTS newLessontbl (
+                lesson_id INTEGER PRIMARY KEY, 
+                lessonName varchar(255),
+                lock varchar(255),
+                imgSrc1 varchar(255),
+                imgSrc2 varchar(255),
+                imgSrc3 varchar(255),
+                imgSrc4 varchar(255),
+                imgSrc5 varchar(255))`, [])
+            .then((res) => {
+              // alert(JSON.stringify(res));
+            })
+            .catch((error) => alert(JSON.stringify(error)));
           })
           .catch((error) => alert(JSON.stringify(error)));
           
@@ -112,6 +130,8 @@ export class DbServiceService {
         await this.storage.set('l11-lock', true);
         await this.storage.set('l12-lock', true);
       }
+
+      this.splashScreen.hide();
   }
 
   async initQuizComponent() {
@@ -218,6 +238,31 @@ export class DbServiceService {
     });
   }
 
+  async addLessonToList(id, lessonName, img1, img2, img3, img4, img5,) {
+    await this.dbInstance.executeSql(`INSERT INTO newLessontbl (
+      lesson_id,
+      lessonName,
+      lock,
+      imgSrc1,
+      imgSrc2,
+      imgSrc3,
+      imgSrc4,
+      imgSrc5) VALUES (
+        ?, 
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?,
+        ?)`, [id, lessonName, "true", img1, img2, img3, img4, img5]).then((data) => {
+      console.log("INSERTED: " + JSON.stringify(data));
+    }, (error) => {
+      console.log("ERROR: " + alert(error.err));
+    });
+  }
+
+
   async updateGroupQuiz(id, groupName) {
     await this.dbInstance.executeSql(`UPDATE quizGroup SET
       groupId = ?,
@@ -235,6 +280,57 @@ export class DbServiceService {
     await this.dbInstance.executeSql(`DELETE from quizGroup
       WHERE
       groupId = ?`, [id]).then((data) => {
+      console.log("INSERTED: " + JSON.stringify(data));
+    }, (error) => {
+      console.log("ERROR: " + alert(error.err));
+    });
+  }
+
+  async getLessonList(index? : number) {
+    let result = []; 
+    if(index) {
+      await this.dbInstance.executeSql(`select * from newLessontbl where lesson_id = ?`, [index]).then((data) => {
+        for(let i = 0; i < data.rows.length; i++) {
+          result.push({
+            'id': JSON.parse(data.rows.item(i).lesson_id),
+            'lessonName' : data.rows.item(i).lessonName,
+            'lessons': [
+              data.rows.item(i).imgSrc1,
+              data.rows.item(i).imgSrc2,
+              data.rows.item(i).imgSrc3,
+              data.rows.item(i).imgSrc4,
+              data.rows.item(i).imgSrc5
+            ]
+          }
+          )
+        }
+        console.log("selected: " + JSON.stringify(data));
+      }, (error) => {
+        console.log("ERROR: " + alert(error.err));
+      });
+    } else {
+      await this.dbInstance.executeSql(`select * from newLessontbl`, []).then((data) => {
+        for(let i = 0; i < data.rows.length; i++) {
+          result.push({
+            'id': JSON.parse(data.rows.item(i).lesson_id),
+            'lessonName' : data.rows.item(i).lessonName,
+            'lock': data.rows.item(i).lock
+          }
+          )
+        }
+        console.log("selected: " + JSON.stringify(data));
+      }, (error) => {
+        console.log("ERROR: " + alert(error.err));
+      });
+    }
+    return result;
+  }
+
+  async updateLessonTbl(lock, lesson_id) {
+    await this.dbInstance.executeSql(`UPDATE newLessontbl SET
+      lock = ?
+      WHERE
+      lesson_id = ?`, [lock, lesson_id]).then((data) => {
       console.log("INSERTED: " + JSON.stringify(data));
     }, (error) => {
       console.log("ERROR: " + alert(error.err));

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Tile, clues, Letters } from '../constants/lessonButton';
 import * as _ from 'lodash';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Storage } from '@ionic/storage';
 import { DbServiceService } from '../db-service.service';
+import { Location } from "@angular/common";
 
 @Component({
   selector: 'app-activity-crossword',
@@ -36,7 +37,9 @@ export class ActivityCrosswordPage implements OnInit {
 
   constructor(private route: ActivatedRoute,
     private storage: Storage,
-    private DbServiceService: DbServiceService
+    private DbServiceService: DbServiceService,
+    private router: Router,
+    private location: Location
     ) { 
 
     }
@@ -733,6 +736,7 @@ export class ActivityCrosswordPage implements OnInit {
     let userId = await this.storage.get('userId');
     await this.DbServiceService.submitActivity(userId, this.paramIndex, crosswordScore);
     alert(`Score: ${crosswordScore}`);
+    this.router.navigate(['/activity-page', {}]);
   }
 
   randomStringCrossword(length) {
@@ -774,6 +778,9 @@ export class ActivityCrosswordPage implements OnInit {
 
   scrambledWord() {
     let word = this.getAnswers(parseInt(this.paramIndex));
+    if(this.isTeacher) {
+      this.guess = word;
+    }
     let letters = word.split("");
     let currentIndex = letters.length,
       temporaryValue,
@@ -795,35 +802,46 @@ export class ActivityCrosswordPage implements OnInit {
   }
 
   resetScrambledword() {
-    this.scrambleWord = this.scrambledWord();
     this.guess = "";
+    this.scrambleWord = this.scrambledWord();
   }
 
   async SubmitLetters() {
     let userId = await this.storage.get('userId');
-    if(this.guess.toLocaleUpperCase() == this.word) {
+    if(this.isTeacher) {
       this.score = this.score + 1;
       this.totalAdded = this.score + this.attempts;
+      this.resetScrambledword();
       if(this.totalAdded == this.guessLength) {
-        await this.DbServiceService.submitActivity(userId, this.paramIndex, this.score);
-        alert(`Score: ${this.score}`);
-        this.scambledSubmitIsDisable = true;
         this.totalAdded = 0;
-      } else {
-        this.resetScrambledword();
+        this.location.back();
       }
     } else {
-      this.attempts = this.attempts + 1;
-      this.totalAdded = this.score + this.attempts;
-      if(this.attempts == this.guessLength) {
-        await this.DbServiceService.submitActivity(userId, this.paramIndex, this.score);
-        alert(`Score: ${this.score}`);
-        this.scambledSubmitIsDisable = true;
-        this.totalAdded = 0;
+      if(this.guess.toLocaleUpperCase() == this.word) {
+        this.score = this.score + 1;
+        this.totalAdded = this.score + this.attempts;
+        if(this.totalAdded == this.guessLength) {
+          await this.DbServiceService.submitActivity(userId, this.paramIndex, this.score);
+          alert(`Score: ${this.score}`);
+          this.scambledSubmitIsDisable = true;
+          this.totalAdded = 0;
+          this.location.back();
+        } else {
+          this.resetScrambledword();
+        }
+      } else {
+        this.attempts = this.attempts + 1;
+        this.totalAdded = this.score + this.attempts;
+        if(this.attempts == this.guessLength) {
+          await this.DbServiceService.submitActivity(userId, this.paramIndex, this.score);
+          alert(`Score: ${this.score}`);
+          this.scambledSubmitIsDisable = true;
+          this.totalAdded = 0;
+          this.location.back();
+        }
+        this.resetScrambledword();
       }
-      this.resetScrambledword();
     }
-
   }
 
 }

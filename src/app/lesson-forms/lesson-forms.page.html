@@ -21,6 +21,13 @@
       <ion-label [ngClass]="lessonlist.lock ?'isDisabled' : ''" (click)="lessonNavigate(i, lessonlist.lock)">
         {{lessonlist.lesson}}
       </ion-label>
+
+      <ion-input *ngIf="lessonlist.lesson == null" type="text" [(ngModel)]="newLessonName"></ion-input>
+      <ion-button expand="block" class="ion-text-center" (click)="AddLesson(lessonlist, i)" *ngIf="isTeacher && lessonlist.lesson == null">Add</ion-button>
+      <ion-button expand="block" class="ion-text-center" (click)="RemoveLesson(quizGroup, i)" *ngIf="isTeacher && lessonlist.lesson == null">Delete</ion-button>
     </ion-item>
+    <ion-button  expand="block" class="ion-text-center" *ngIf="isTeacher" [ngClass]="addLessonName ?'isDisabled' : ''" (click)="loadImageFromDevice($event)">
+      <ion-label slot="end">Add Lesson</ion-label>
+    </ion-button>
   </ion-list>
 </ion-content>

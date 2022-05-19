@@ -30,5 +30,5 @@
     </div>
   </div>
   <ion-button expand="block" class="ion-text-center" (click)="SubmitCrossword()" *ngIf="activitySelector == 0 && !isTeacher">Submit</ion-button>
-  <ion-button expand="block" class="ion-text-center" (click)="SubmitLetters()" *ngIf="activitySelector == 1 && !isTeacher" [ngClass]="scambledSubmitIsDisable ?'isDisabled' : ''">Submit</ion-button>
+  <ion-button expand="block" class="ion-text-center" (click)="SubmitLetters()" *ngIf="activitySelector == 1" [ngClass]="scambledSubmitIsDisable ?'isDisabled' : ''">Submit</ion-button>
 </ion-content>

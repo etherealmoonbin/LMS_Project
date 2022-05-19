@@ -1,0 +1,28 @@
+
+<ion-content class="center">
+  <ion-item>
+    Upload Lesson
+  </ion-item>
+  <ion-list>
+    <ion-item>
+      <input type="file" (change)="attachImg($event, 1)" accept="image/jpg">
+    </ion-item>
+    <ion-item>
+      <input type="file" (change)="attachImg($event, 2)" accept="image/jpg">
+    </ion-item>
+    <ion-item>
+      <input type="file" (change)="attachImg($event, 3)" accept="image/jpg">      
+    </ion-item>
+    <ion-item>
+      <input type="file" (change)="attachImg($event, 4)" accept="image/jpg">
+    </ion-item>
+    <ion-item>
+      <input type="file" (change)="attachImg($event, 5)" accept="image/jpg">
+    </ion-item>
+  </ion-list>
+  <ion-item>
+    <ion-button expand="block" class="ion-text-center" *ngIf="isTeacher" (click)="uploadLesson()">
+      <ion-label>Upload Lesson</ion-label>
+    </ion-button>
+  </ion-item>
+</ion-content>

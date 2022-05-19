@@ -3,6 +3,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { lessonButtons, lessonPageLength } from '../constants/lessonButton';
 import { Storage } from '@ionic/storage';
 import { UtilityComponent } from '../utility/utility.component';
+import { DbServiceService } from '../db-service.service';
 
 @Component({
   selector: 'app-lesson-page',
@@ -15,12 +16,14 @@ export class LessonPagePage implements OnInit {
   lessonPageLength: any = [];
   isAuthenticated: boolean = false;
   isTeacher: any;
+  isPreloadedLesson: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private storage: Storage,
-    private util: UtilityComponent
+    private util: UtilityComponent,
+    private DbServiceService: DbServiceService
     ) {
       route.params.subscribe(async val => {
         await this.checkAuthentication();
@@ -31,12 +34,19 @@ export class LessonPagePage implements OnInit {
 
   async ngOnInit() {
     this.myParam = parseInt(this.route.snapshot.paramMap.get('index'));
-    this.lessonTitle = lessonButtons[this.myParam];
-    for(let i = 0; i < lessonPageLength[this.myParam]; i++) {
-      await this.lessonPageLength.push(i+1);
-      console.log(`L${this.myParam} - ${i + 1}`)
+    if(this.myParam > 12) {
+      this.isPreloadedLesson = false;
+      const lessonSelected = await this.DbServiceService.getLessonList(this.myParam + 1);
+      this.lessonPageLength = lessonSelected[0].lessons;
+      this.lessonTitle = lessonSelected[0].lessonName;
+    } else {
+      this.isPreloadedLesson = true;
+      for(let i = 0; i < lessonPageLength[this.myParam]; i++) {
+        await this.lessonPageLength.push(i+1);
+        console.log(`L${this.myParam} - ${i + 1}`)
+      }
+      this.lessonTitle = lessonButtons[this.myParam];
     }
-
    }
 
    async NavigateCrossWord(index) {
