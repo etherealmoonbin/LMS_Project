@@ -116,20 +116,22 @@ export class DbServiceService {
 
       const isInit = await this.storage.get('l0-lock');
       if(isInit == null || isInit == undefined) {
-        await this.storage.set('l0-lock', true);
-        await this.storage.set('l1-lock', true);
-        await this.storage.set('l2-lock', true);
-        await this.storage.set('l3-lock', true);
-        await this.storage.set('l4-lock', true);
-        await this.storage.set('l5-lock', true);
-        await this.storage.set('l6-lock', true);
-        await this.storage.set('l7-lock', true);
-        await this.storage.set('l8-lock', true);
-        await this.storage.set('l9-lock', true);
-        await this.storage.set('l10-lock', true);
-        await this.storage.set('l11-lock', true);
-        await this.storage.set('l12-lock', true);
+        await this.storage.set('l0-lock', false);
+        await this.storage.set('l1-lock', false);
+        await this.storage.set('l2-lock', false);
+        await this.storage.set('l3-lock', false);
+        await this.storage.set('l4-lock', false);
+        await this.storage.set('l5-lock', false);
+        await this.storage.set('l6-lock', false);
+        await this.storage.set('l7-lock', false);
+        await this.storage.set('l8-lock', false);
+        await this.storage.set('l9-lock', false);
+        await this.storage.set('l10-lock', false);
+        await this.storage.set('l11-lock', false);
+        await this.storage.set('l12-lock', false);
       }
+
+      await this.initQuizComponent();
 
       this.splashScreen.hide();
   }
